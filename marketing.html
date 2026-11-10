@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico de Marketing Comercial - Fixa Marca</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            primary: '#FFFFFF',
+                            secondary: '#FF7A00',
+                            tertiary: '#0D0D0D',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #0D0D0D; }
+        ::-webkit-scrollbar-thumb { background: #1B3859; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FF7A00; }
+
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAFAFA; color: #0D0D0D; overflow-x: hidden;}
+
+        /* Utilities */
+        .text-gradient { background: linear-gradient(90deg, #FF7A00, #FFB067); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
+        
+        /* Animations & Interactions */
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.5, 0, 0, 1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        
+        .slow-zoom { animation: zoom 20s infinite alternate linear; }
+        @keyframes zoom { from { transform: scale(1); } to { transform: scale(1.15); } }
+
+        .blob {
+            position: absolute; border-radius: 50%; filter: blur(80px); z-index: 0;
+            animation: pulse-blob 8s infinite alternate ease-in-out;
+        }
+        @keyframes pulse-blob {
+            0% { transform: scale(1) translate(0px, 0px); opacity: 0.3; }
+            100% { transform: scale(1.2) translate(30px, 50px); opacity: 0.5; }
+        }
+
+        .btn-shine {
+            position: relative; overflow: hidden; transition: transform 0.3s ease;
+        }
+        .btn-shine::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-20deg); animation: shine 3s infinite;
+        }
+        @keyframes shine { 100% { left: 200%; } }
+
+        /* Lightbox */
+        #lightbox {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s ease; cursor: zoom-out;
+        }
+        #lightbox.active { display: flex; opacity: 1; }
+        #lightbox img { max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: scale(0.95); transition: transform 0.3s ease;}
+        #lightbox.active img { transform: scale(1); }
+
+        /* Tooltip */
+        .tooltip { position: relative; cursor: help; border-bottom: 1px dotted #FF7A00; }
+        .tooltip::after {
+            content: attr(data-tooltip); position: absolute; bottom: 120%; left: 50%;
+            transform: translateX(-50%) translateY(10px); opacity: 0; visibility: hidden;
+            background: #0D0D0D; color: #FFF; padding: 6px 12px; border-radius: 6px;
+            font-size: 12px; white-space: nowrap; transition: all 0.3s ease; z-index: 10;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-weight: 500;
+        }
+        .tooltip:hover::after { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+
+        /* Accordion Animation */
+        .accordion-content { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Gantt / Timeline */
+        .timeline-container { position: relative; padding-left: 2rem; }
+        .timeline-container::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: #FF7A00; border-radius: 4px; }
+        .timeline-item { position: relative; margin-bottom: 2rem; }
+        .timeline-item::before {
+            content: ''; position: absolute; left: -2.35rem; top: 0.5rem; width: 16px; height: 16px;
+            background: #FF7A00; border: 4px solid #fff; border-radius: 50%; box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.2);
+        }
+
+        /* Table Aesthetics */
+        .table-wrapper { overflow-x: auto; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; background: #FFF; }
+        th { background: #0D0D0D; color: #FFF; padding: 16px; text-align: left; font-weight: 600; white-space: nowrap; }
+        td { padding: 16px; border-bottom: 1px solid #E5E7EB; color: #4B5563; }
+        tr:hover td { background-color: #FFF8F0; }
+    </style>
+</head>
+<body>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" onclick="closeLightbox()">
+        <img id="lightbox-img" src="" alt="Ampliado">
+    </div>
+
+    <!-- Header -->
+    <header id="main-header" class="fixed top-0 w-full z-50 transition-all duration-300 py-4 px-6 md:px-12 bg-white text-brand-tertiary shadow-sm">
+        <div class="max-w-7xl mx-auto flex justify-between items-center relative">
+            <div class="w-1/3"></div> <!-- Spacer -->
+            <div class="w-1/3 flex justify-center">
+                <img src="https://imgur.com/aX7d5Bm.png" alt="Fixa Marca Logo" class="h-10 object-contain hover:scale-110 transition-transform duration-300 cursor-pointer">
+            </div>
+            <div class="w-1/3 flex justify-end">
+                <img src="https://imgur.com/jmzaox0.png" alt="V4 Company Logo" class="h-6 object-contain hover:scale-110 transition-transform duration-300 brightness-0">
+            </div>
+        </div>
+    </header>
+
+    <!-- Sessão 01: Hero -->
+    <section class="relative h-screen flex items-center justify-center overflow-hidden bg-brand-tertiary">
+        <div class="absolute inset-0 z-0">
+            <div class="w-full h-full bg-cover bg-center slow-zoom opacity-40" style="background-image: url('https://images.unsplash.com/photo-1557838923-2985c318be48?auto=format&fit=crop&q=80');"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent to-brand-tertiary"></div>
+        </div>
+        <div class="relative z-10 text-center px-4 reveal">
+            <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight text-gradient">Diagnóstico de<br>Marketing</h1>
+            <a href="#sumario" class="mt-10 inline-block bg-brand-secondary text-white font-bold py-4 px-8 rounded-full shadow-lg shadow-orange-500/30 btn-shine hover:-translate-y-1">
+                Iniciar Leitura <i class="fas fa-arrow-down ml-2"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Sessão 02: Sumário -->
+    <section id="sumario" class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-4xl font-bold text-brand-tertiary mb-2">SUMÁRIO</h2>
+                <div class="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-semibold">
+                    <i class="fas fa-clock text-brand-secondary"></i> Duração Estimada: 1h
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 reveal">
+                <div class="bg-gray-50 p-8 rounded-2xl border border-gray-100 hover:-translate-y-2 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 group cursor-pointer">
+                    <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm mb-6 text-brand-secondary group-hover:scale-110 transition-transform">
+                        <i class="fas fa-chart-line text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-brand-tertiary">Benchmarking de Anúncios</h3>
+                    <p class="text-gray-500 text-sm">- Análise estratégica de tráfego.</p>
+                </div>
+                
+                <div class="bg-gray-50 p-8 rounded-2xl border border-gray-100 hover:-translate-y-2 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 group cursor-pointer">
+                    <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm mb-6 text-brand-secondary group-hover:scale-110 transition-transform">
+                        <i class="fas fa-bullhorn text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-brand-tertiary">Benchmarking de Conteúdos</h3>
+                    <p class="text-gray-500 text-sm">- Estudo de criativos e narrativas.</p>
+                </div>
+
+                <div class="bg-gray-50 p-8 rounded-2xl border border-gray-100 hover:-translate-y-2 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 group cursor-pointer">
+                    <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm mb-6 text-brand-secondary group-hover:scale-110 transition-transform">
+                        <i class="fas fa-hashtag text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-brand-tertiary">Benchmarking Social Media</h3>
+                    <p class="text-gray-500 text-sm">- Posicionamento em redes sociais.</p>
+                </div>
+
+                <div class="bg-gray-50 p-8 rounded-2xl border border-gray-100 hover:-translate-y-2 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 group cursor-pointer">
+                    <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-sm mb-6 text-brand-secondary group-hover:scale-110 transition-transform">
+                        <i class="fas fa-globe text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3 text-brand-tertiary">Benchmarking de Site & Concorrentes</h3>
+                    <p class="text-gray-500 text-sm">- Análise de landing pages e mercado.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sessão 03: Mídia Paga -->
+    <section class="py-24 bg-gray-50 relative overflow-hidden z-10">
+        <!-- Abstract Blob Background -->
+        <div class="blob bg-orange-300/20 w-96 h-96 top-0 left-[-100px]"></div>
+        
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="reveal mb-10">
+                <h2 class="text-4xl md:text-5xl font-extrabold text-brand-tertiary mb-4">Diagnóstico de mídia paga</h2>
+                <p class="text-gray-500 font-medium"><i class="fas fa-info-circle mr-1"></i> Selecione os tópicos abaixo para expandir os dados técnicos (Toggle List).</p>
+            </div>
+
+            <!-- Accordion Group -->
+            <div class="space-y-4 reveal">
+                
+                <!-- Toggle 1: Visão Geral e Estrutura -->
+                <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                    <button class="accordion-toggle w-full px-6 py-5 text-left flex justify-between items-center hover:bg-gray-50 transition-colors">
+                        <span class="text-xl font-bold text-brand-tertiary"><i class="fas fa-sitemap text-brand-secondary mr-3"></i> 1. Visão Geral, Estrutura e Rastreamento</span>
+                        <i class="fas fa-chevron-down text-brand-secondary transition-transform duration-300 transform"></i>
+                    </button>
+                    <div class="accordion-content hidden px-6 py-8 border-t border-gray-100 space-y-12">
+                        <div class="bg-gray-50 p-6 rounded-xl border-l-4 border-brand-secondary shadow-sm">
+                            <h3 class="text-2xl font-bold mb-4">Análise da mídia paga do cliente</h3>
+                            <p class="text-gray-700 leading-relaxed text-lg">O único canal pago foi o Google Ads: uma campanha de Pesquisa, sem testes, sem palavras negativas e sem medição de lead real. O <span class="tooltip font-bold text-brand-secondary" data-tooltip="Click-Through Rate (Taxa de Clique)">CTR</span> de 7,93% está acima da média, mas as 903 conversões e o custo de R$ 6,60 por conversão não servem de referência.</p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-2xl font-bold mb-6 text-brand-tertiary flex items-center gap-3"><i class="fas fa-bullhorn text-brand-secondary"></i> Canais, oferta e ganchos</h4>
+                            <div class="table-wrapper">
+                                <table>
+                                    <thead>
+                                        <tr><th>Canal</th><th>Situação</th><th>Oferta / gancho anunciado</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="font-semibold"><i class="fab fa-google text-blue-500 mr-2"></i> Google Ads (Pesquisa)</td>
+                                            <td>1 campanha, "JULHO CAMPANHA ABERTA #2", de 18/07/2025 a dez/2025. Parada por saldo em atraso</td>
+                                            <td>"10% off em adesivo na 1ª compra", "gráfica rápida", "orçamento rápido no WhatsApp", "entrega grátis em Piracicaba"</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-semibold"><i class="fab fa-meta text-blue-600 mr-2"></i> Meta Ads</td>
+                                            <td>Sem acesso à conta. Nenhum anúncio ativo encontrado na Biblioteca de Anúncios</td>
+                                            <td>—</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p class="mt-4 text-gray-600">Os anúncios levavam para a página de links da Cia do Panfleto (bio.site/graficaciadopanfleto), com o caminho "grafica/cia do panfleto" na URL exibida. Nenhum anúncio levou o nome Fixa Marca.</p>
+                        </div>
+
+                        <div>
+                            <h4 class="text-2xl font-bold mb-6 text-brand-tertiary flex items-center gap-3"><i class="fas fa-cogs text-brand-secondary"></i> Estrutura da campanha</h4>
+                            <div class="table-wrapper">
+                                <table>
+                                    <thead>
+                                        <tr><th>Item</th><th>Configuração</th><th>Avaliação</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td class="font-bold">Objetivo e lance</td><td>Leads, Maximizar conversões</td><td>O Google definiu sozinho o <span class="tooltip border-b border-gray-400" data-tooltip="Custo Por Aquisição">CPA</span> desejado: R$ 5,90 (24/08) e R$ 7,38 (14/09)</td></tr>
+                                        <tr><td class="font-bold">Orçamento</td><td>R$ 20/dia, depois R$ 80/dia a partir de 02/10/2025</td><td>Gasto médio de R$ 994/mês</td></tr>
+                                        <tr><td class="font-bold">Grupos de anúncios</td><td>1 grupo para todos os produtos</td><td class="text-red-500 font-medium">Sem anúncio nem medição por produto</td></tr>
+                                        <tr><td class="font-bold">Palavras-chave</td><td>9 em correspondência ampla, depois 7. Aspas digitadas dentro do termo</td><td>Intenção era frase, ficou tudo amplo. "flyers" e "folders piracicaba" nunca rodaram</td></tr>
+                                        <tr><td class="font-bold">Anúncios</td><td>2 anúncios responsivos quase idênticos</td><td>Sem teste real de mensagem</td></tr>
+                                        <tr><td class="font-bold">Região</td><td>Raio de 10 km da loja (era 20 km)</td><td>Corta Limeira, Americana, Rio Claro e Santa Bárbara</td></tr>
+                                        <tr><td class="font-bold">Idiomas e dispositivos</td><td>Português, inglês e espanhol. Inclui TV conectada</td><td>Configuração padrão, sem ajuste</td></tr>
+                                        <tr><td class="font-bold">Públicos</td><td>Renda, idade, sexo e interesses só em observação</td><td>Nunca usados para ajustar lance</td></tr>
+                                        <tr><td class="font-bold text-red-600">Palavras negativas</td><td class="text-red-600">Nenhuma em toda a vida da conta</td><td class="text-red-600 font-bold">Origem do desperdício</td></tr>
+                                        <tr><td class="font-bold">Automações</td><td>AI Max, recursos automáticos e aplicação automática de recomendações ligados</td><td>O Google mexia na conta sem revisão</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="grid lg:grid-cols-2 gap-8">
+                            <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm">
+                                <h4 class="text-xl font-bold mb-4 text-brand-tertiary">Testes de público e criativo</h4>
+                                <p class="text-gray-600">A estrutura é pobre: 1 grupo, 2 anúncios iguais, nenhum teste de público, oferta ou correspondência. A única otimização manual relevante foi em 01/10/2025, com duas palavras removidas e títulos reescritos.</p>
+                            </div>
+                            <div class="bg-red-50 p-6 rounded-xl border border-red-100 shadow-sm">
+                                <h4 class="text-xl font-bold mb-4 text-brand-tertiary text-red-600">Rastreamento Inexistente</h4>
+                                <p class="text-gray-700 mb-3 font-semibold">Não havia medição de lead real:</p>
+                                <ul class="list-disc pl-5 space-y-2 text-sm text-gray-700">
+                                    <li>A meta "Solicitar orçamento (Website)" foi removida em 05/08/2025. A campanha passou a usar as metas padrão da conta.</li>
+                                    <li>O Google marca a campanha como "configuração do acompanhamento de conversões está incompleta".</li>
+                                    <li>O cliente não tem site. A página de destino é um bio.site, sem <span class="tooltip font-bold" data-tooltip="Google Tag Manager">GTM</span> ou <span class="tooltip font-bold" data-tooltip="Google Analytics 4">GA4</span> e sem formulário, e o clique no WhatsApp não é medido.</li>
+                                    <li>O valor registrado foi R$ 180 em 903 conversões, então não há como calcular retorno.</li>
+                                    <li>A taxa de conversão de 47,5% indica que a conta contava microações, como ligação, rota ou visita ao perfil, e não orçamentos.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toggle 2: Desempenho e Histórico -->
+                <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                    <button class="accordion-toggle w-full px-6 py-5 text-left flex justify-between items-center hover:bg-gray-50 transition-colors">
+                        <span class="text-xl font-bold text-brand-tertiary"><i class="fas fa-chart-line text-brand-secondary mr-3"></i> 2. Desempenho, Custos e Histórico</span>
+                        <i class="fas fa-chevron-down text-brand-secondary transition-transform duration-300 transform"></i>
+                    </button>
+                    <div class="accordion-content hidden px-6 py-8 border-t border-gray-100 space-y-12">
+                        <div>
+                            <h4 class="text-xl font-bold mb-4 text-brand-tertiary">Desempenho por palavra-chave</h4>
+                            <div class="table-wrapper">
+                                <table>
+                                    <thead>
+                                        <tr><th>Palavra-chave</th><th>Custo (R$)</th><th>Cliques</th><th>CTR</th><th>CPC (R$)</th><th>Conv.</th><th>Custo/conv. (R$)</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td class="font-medium">gráfica piracicaba</td><td>4.657,83</td><td>1.483</td><td>8,38%</td><td>3,14</td><td>714</td><td>6,52</td></tr>
+                                        <tr class="bg-red-50"><td class="font-medium">AI Max (página de destino)</td><td>686,70</td><td>220</td><td>5,98%</td><td>3,12</td><td>81</td><td class="text-red-600 font-bold">8,50</td></tr>
+                                        <tr><td class="font-medium">adesivos piracicaba</td><td>208,15</td><td>73</td><td>7,90%</td><td>2,85</td><td>37</td><td>5,58</td></tr>
+                                        <tr><td class="font-medium">cartão de visita piracicaba</td><td>156,63</td><td>42</td><td>10,12%</td><td>3,73</td><td>21</td><td>7,46</td></tr>
+                                        <tr class="bg-green-50"><td class="font-medium">banner piracicaba</td><td>145,56</td><td>44</td><td>7,09%</td><td>3,31</td><td>32</td><td class="text-green-600 font-bold">4,50</td></tr>
+                                        <tr><td class="font-medium">painéis luminosos</td><td>35,90</td><td>10</td><td>2,87%</td><td>3,59</td><td>6</td><td>5,98</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p class="mt-4 text-gray-600 text-sm">"gráfica piracicaba" levou 78% da verba. As palavras de produto custaram menos por conversão, mas ficaram com pouca verba. O AI Max teve o pior custo por conversão da conta.</p>
+                        </div>
+
+                        <div class="grid lg:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="text-xl font-bold mb-4 text-brand-tertiary">Termos de pesquisa e desperdício</h4>
+                                <p class="text-sm text-gray-600 mb-3">O relatório mostra 1.713 termos, que somam R$ 3.509 (59% da verba). O restante fica oculto por baixo volume.</p>
+                                <div class="table-wrapper">
+                                    <table class="text-sm">
+                                        <thead><tr><th>Categoria</th><th>Custo (R$)</th><th>Exemplos</th></tr></thead>
+                                        <tbody>
+                                            <tr><td>Termos com custo e 0 conversões (127)</td><td>486</td><td>—</td></tr>
+                                            <tr><td>Copiadora / xerox (80)</td><td>249</td><td>"copias e cia piracicaba" (R$ 108), copiadora, xerox</td></tr>
+                                            <tr><td>Fora do segmento (121)</td><td>64</td><td>aluguel de sala, lanche, pizzaria, vagas de emprego</td></tr>
+                                            <tr><td>Nomes de concorrentes (83)</td><td>25</td><td>Nova Imagem, Dalmar, Michelin, Tanacara</td></tr>
+                                            <tr><td>Informacionais</td><td>20</td><td>"quanto custa um banner", "tamanho de banner"</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold mb-4 text-brand-tertiary">Verba visível por produto vs. faturamento</h4>
+                                <div class="table-wrapper">
+                                    <table class="text-sm">
+                                        <thead><tr><th>Produto</th><th>% fat.</th><th>Custo (R$)</th><th>Cliques</th><th>Conv.</th></tr></thead>
+                                        <tbody>
+                                            <tr><td>"Gráfica" genérico</td><td>—</td><td>1.847 (53%)</td><td>583</td><td>254</td></tr>
+                                            <tr><td>Adesivos</td><td>40%</td><td>475</td><td>143</td><td>93</td></tr>
+                                            <tr><td>Banner / lona / faixa</td><td>15%</td><td>271</td><td>89</td><td>74</td></tr>
+                                            <tr><td>Cartão de visita</td><td>10%</td><td>183</td><td>51</td><td>23</td></tr>
+                                            <tr><td>Panfleto / flyer</td><td>10%</td><td>111</td><td>35</td><td>21</td></tr>
+                                            <tr class="bg-red-50 font-bold text-red-700"><td>Fachada / ACM / placa / letreiro</td><td>10%</td><td>8</td><td>4</td><td>0</td></tr>
+                                            <tr><td>Wind banner</td><td>5%</td><td>22</td><td>7</td><td>3</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <p class="mt-2 text-sm text-red-600 font-semibold">Fachadas e ACM são o produto mais caro e o centro do posicionamento, mas não tinham palavra-chave nem anúncio. Houve 201 impressões em buscas como "fachada de loja em ACM com LED".</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 class="text-xl font-bold mb-4 text-brand-tertiary">O que já foi feito no passado</h4>
+                            <div class="table-wrapper mb-6">
+                                <table class="text-sm">
+                                    <thead><tr><th>Data</th><th>Alteração</th><th>Leitura</th></tr></thead>
+                                    <tbody>
+                                        <tr><td>dez/2025</td><td>Anúncios param</td><td>Saldo em atraso na conta</td></tr>
+                                        <tr><td>02/10/2025</td><td>Orçamento de R$ 20 para R$ 80/dia</td><td>Explica o pico de 342 conversões em outubro</td></tr>
+                                        <tr><td>01/10/2025</td><td>Removidas "grafica em piracicaba" e "adesivo piracicaba"; títulos reescritos</td><td>Única otimização manual relevante</td></tr>
+                                        <tr><td>24/08 e 14/09/2025</td><td>Recomendações automáticas definem CPA de R$ 5,90 e depois R$ 7,38</td><td>O Google mexia na conta sozinho</td></tr>
+                                        <tr><td>05/08/2025</td><td>Meta de orçamento removida; AI Max ligado; segmentação muda para presença na região</td><td>Origem do problema de mensuração</td></tr>
+                                        <tr><td>18/07/2025</td><td>Campanha criada a R$ 20/dia, raio reduzido de 20 para 10 km</td><td>Nasceu como teste de 15 dias, com fim em 02/08</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p class="text-gray-600 mb-6">Nenhuma conversão foi registrada antes de julho de 2025. O nome "#2" indica uma versão anterior, sem dados no histórico exportado.</p>
+                            
+                            <div class="my-8 cursor-pointer relative group rounded-xl overflow-hidden shadow-lg border border-gray-200" onclick="openLightbox('https://imgur.com/i0RzLZq.png')">
+                                <img src="https://imgur.com/i0RzLZq.png" alt="Google Ads, gráfico de série temporal exportado pela equipe · jul a dez/2025" class="w-full object-cover transition-transform duration-500 group-hover:scale-105">
+                                <div class="absolute inset-0 bg-black/40 flex justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <i class="fas fa-search-plus text-white text-4xl drop-shadow-lg"></i>
+                                </div>
+                            </div>
+                            <p class="text-center text-sm text-gray-500 mb-2 italic">Google Ads, gráfico de série temporal exportado pela equipe · jul a dez/2025. O pico de outubro acompanha o aumento de orçamento, não uma mudança de estratégia. A partir de janeiro de 2026 não há mais conversões, porque a conta parou por saldo em atraso.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toggle 3: Análise dos Criativos -->
+                <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                    <button class="accordion-toggle w-full px-6 py-5 text-left flex justify-between items-center hover:bg-gray-50 transition-colors">
+                        <span class="text-xl font-bold text-brand-tertiary"><i class="fas fa-paint-brush text-brand-secondary mr-3"></i> 3. Análise dos Criativos</span>
+                        <i class="fas fa-chevron-down text-brand-secondary transition-transform duration-300 transform"></i>
+                    </button>
+                    <div class="accordion-content hidden px-6 py-8 border-t border-gray-100 space-y-8">
+                        <div>
+                            <p class="text-gray-700 mb-6 text-lg">Os criativos eram só anúncios de texto do Google, com tom de gráfica rápida de varejo e sem o maior diferencial da marca: a nota 4,8 com mais de 510 avaliações. Não há criativos de Meta para analisar, por falta de acesso.</p>
+                            
+                            <h4 class="text-xl font-bold mb-4">O que rodou</h4>
+                            <p class="text-gray-600 mb-4">Dois anúncios responsivos com os mesmos 15 títulos e 4 descrições. Até 05/08/2025, "gráfica rápida em piracicaba" e a descrição de 10% off ficaram fixados na posição 1. Depois entrou o título dinâmico {Keyword:grafica piracicaba}.</p>
+                            
+                            <div class="table-wrapper mb-8">
+                                <table>
+                                    <thead><tr><th>Gancho</th><th>Títulos e descrições usados</th></tr></thead>
+                                    <tbody>
+                                        <tr><td class="font-bold">Velocidade</td><td>"gráfica rápida em piracicaba", "orçamento rápido no WhatsApp", "solicite cotação em minutos", "panfletos e banners express"</td></tr>
+                                        <tr><td class="font-bold">Desconto</td><td>"10% off em adesivo na 1ª compra", "promoção adesivo personalizado"</td></tr>
+                                        <tr><td class="font-bold">Frete</td><td>"entrega grátis em piracicaba", "entrega rápida e preço justo"</td></tr>
+                                        <tr><td class="font-bold">Lista de produtos</td><td>"flyers, adesivos e fachadas", "folders, rótulos e selos", "banners, cartão de visita", "banner, wind banner piracicaba"</td></tr>
+                                        <tr><td class="font-bold">Genéricos</td><td>"aumente suas vendas", "acabamento de qualidade"</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="grid md:grid-cols-2 gap-8 mb-8">
+                                <div class="bg-gray-100 p-6 rounded-xl border-l-4 border-green-500">
+                                    <h4 class="text-lg font-bold mb-3">Criativos e ganchos campeões</h4>
+                                    <p class="text-sm text-gray-700 line-clamp-4 relative transition-all duration-300 content-block">O relatório de desempenho por título não foi exportado, então não dá para apontar o título campeão. Os sinais que existem:<br>- Gancho campeão: busca local + produto. O título dinâmico com o termo buscado e as palavras de produto com a cidade tiveram o melhor CTR: "cartão de visita piracicaba" em exata com 19,2% e "banner piracicaba" com 12,7%.<br>- Banner é o produto mais eficiente. "banner piracicaba" teve o menor custo por conversão (R$ 4,50) e "banner personalizado" converteu 11 de 11 cliques.<br>- Velocidade e WhatsApp combinam com a intenção de quem busca "gráfica perto de mim", termo com CTR de 14,9%.</p>
+                                    <button class="text-brand-secondary text-sm font-bold mt-2 hover:underline btn-ver-mais">Ver mais</button>
+                                </div>
+                                <div class="bg-gray-100 p-6 rounded-xl border-l-4 border-red-500">
+                                    <h4 class="text-lg font-bold mb-3">O que falta nos criativos</h4>
+                                    <ul class="text-sm text-gray-700 list-disc pl-4 space-y-1 content-block line-clamp-4 transition-all duration-300">
+                                        <li>A nota 4,8 com mais de 510 avaliações não aparece em nenhum título.</li>
+                                        <li>Nenhuma menção a instalação, fachada em ACM como serviço completo ou atendimento a empresas.</li>
+                                        <li>O tom de varejo (promoção de primeira compra, panfleto) conflita com o posicionamento B2B "sua marca pronta e instalada num só lugar".</li>
+                                        <li>O anúncio promete 10% off, mas a página de destino não menciona a oferta.</li>
+                                        <li>A marca anunciada era Cia do Panfleto, não Fixa Marca.</li>
+                                    </ul>
+                                    <button class="text-brand-secondary text-sm font-bold mt-2 hover:underline btn-ver-mais">Ver mais</button>
+                                </div>
+                            </div>
+
+                            <div class="my-8 cursor-pointer relative group rounded-xl overflow-hidden shadow-lg border border-gray-200" onclick="openLightbox('https://imgur.com/9NbAlRf.png')">
+                                <img src="https://imgur.com/9NbAlRf.png" alt="Prints do Google Ads" class="w-full object-cover transition-transform duration-500 group-hover:scale-105">
+                                <div class="absolute inset-0 bg-black/40 flex justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <i class="fas fa-search-plus text-white text-4xl drop-shadow-lg"></i>
+                                </div>
+                            </div>
+                            <p class="text-center text-sm text-gray-500 italic">Prints do Google Ads: Títulos e descrições do anúncio responsivo e a região segmentada (raio de 10 km), com o aviso de saldo em atraso no topo.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toggle 4: Benchmarking de Keywords -->
+                <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+                    <button class="accordion-toggle w-full px-6 py-5 text-left flex justify-between items-center hover:bg-gray-50 transition-colors">
+                        <span class="text-xl font-bold text-brand-tertiary"><i class="fas fa-search-location text-brand-secondary mr-3"></i> 4. Benchmarking de Palavras-Chave</span>
+                        <i class="fas fa-chevron-down text-brand-secondary transition-transform duration-300 transform"></i>
+                    </button>
+                    <div class="accordion-content hidden px-6 py-8 border-t border-gray-100">
+                        <p class="text-gray-700 mb-6">O Google captura bem a demanda por gráfica, adesivo, banner e cartão. Fachada e ACM têm pouca busca, de 10 a 30 por mês, e precisam do Meta para gerar demanda.</p>
+                        <div class="table-wrapper">
+                            <table class="text-sm">
+                                <thead><tr><th>Palavra-chave</th><th>Volume/mês</th><th>CPC estimado (R$)</th><th>Leitura</th></tr></thead>
+                                <tbody>
+                                    <tr><td class="font-bold">gráfica piracicaba</td><td>1.600</td><td>1,57</td><td>Principal demanda. Já foi 78% da verba</td></tr>
+                                    <tr><td class="font-bold">gráfica perto de mim</td><td>390</td><td>1,82</td><td>Busca local, concorrência baixa</td></tr>
+                                    <tr><td class="font-bold">cartão de visita</td><td>210</td><td>3,94</td><td>Concorre com as gráficas online</td></tr>
+                                    <tr><td class="font-bold">adesivos piracicaba</td><td>170</td><td>1,82</td><td>Produto de 40% da receita, pouco explorado</td></tr>
+                                    <tr><td class="font-bold">adesivo personalizado</td><td>170</td><td>2,06</td><td>—</td></tr>
+                                    <tr><td class="font-bold">comunicação visual piracicaba</td><td>140</td><td>2,56</td><td>Termo B2B, não estava na conta</td></tr>
+                                    <tr><td class="font-bold">wind banner</td><td>140</td><td>2,70</td><td>—</td></tr>
+                                    <tr><td class="font-bold">banner piracicaba</td><td>90</td><td>2,42</td><td>Menor custo por conversão da conta</td></tr>
+                                    <tr><td class="font-bold">adesivo para carro</td><td>50</td><td>0,66</td><td>Frota, oportunidade B2B</td></tr>
+                                    <tr><td class="font-bold">placa acm</td><td>30</td><td>0,85</td><td>—</td></tr>
+                                    <tr><td class="font-bold">fachada de loja</td><td>20</td><td>3,99</td><td>—</td></tr>
+                                    <tr><td class="font-bold">letreiro piracicaba</td><td>20</td><td>3,08</td><td>—</td></tr>
+                                    <tr><td class="font-bold">fachada acm</td><td>10</td><td>5,56</td><td>—</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toggle 5: Plano de Ação -->
+                <div class="bg-brand-tertiary border border-brand-tertiary rounded-xl shadow-lg overflow-hidden relative">
+                    <button class="accordion-toggle w-full px-6 py-5 text-left flex justify-between items-center hover:bg-black transition-colors relative z-10">
+                        <span class="text-xl font-bold text-brand-secondary"><i class="fas fa-rocket text-white mr-3"></i> 5. Plano de Ação de Mídia Paga</span>
+                        <i class="fas fa-chevron-down text-white transition-transform duration-300 transform"></i>
+                    </button>
+                    <div class="accordion-content hidden px-6 py-8 border-t border-gray-800 space-y-8 relative z-10 bg-[#111]">
+                        <div class="blob bg-orange-600/20 w-64 h-64 top-0 right-0 z-0"></div>
+                        <div class="relative z-10">
+                            <p class="text-gray-300 mb-8 text-lg">A prioridade é medir lead de verdade e separar a conta por produto, com fachadas ganhando campanha própria.</p>
+                            
+                            <h4 class="text-xl font-bold mb-4 text-white"><i class="fas fa-chart-pie text-brand-secondary mr-2"></i> Mensuração (antes de investir)</h4>
+                            <ul class="list-disc pl-6 space-y-2 text-gray-300 mb-8">
+                                <li>Criar a página da Fixa Marca com GTM e GA4.</li>
+                                <li>Rastrear o envio do formulário do Pipefy como conversão principal e o clique no WhatsApp como secundária.</li>
+                                <li>Deixar ligação, rota e ações do perfil só como observação, fora da otimização.</li>
+                                <li>Em seguida, importar para o Google Ads os leads que viraram venda no Pipefy (conversões offline).</li>
+                                <li>No Meta: obter acesso à conta antiga ou criar uma nova no Business da Fixa Marca, com pixel e API de Conversões.</li>
+                            </ul>
+
+                            <h4 class="text-xl font-bold mb-4 text-white"><i class="fas fa-layer-group text-brand-secondary mr-2"></i> Nova estrutura no Google Ads</h4>
+                            <div class="table-wrapper mb-8 bg-gray-900 text-gray-300 rounded-lg">
+                                <table class="w-full text-sm text-left">
+                                    <thead class="bg-black text-white"><tr><th class="p-3">Campanha</th><th class="p-3">Palavras-chave de exemplo</th><th class="p-3">Região</th><th class="p-3">Destino</th></tr></thead>
+                                    <tbody>
+                                        <tr class="border-b border-gray-800"><td class="p-3 font-bold">Institucional</td><td class="p-3">gráfica piracicaba, gráfica perto de mim, comunicação visual piracicaba</td><td class="p-3">~15 km</td><td class="p-3">Página principal</td></tr>
+                                        <tr class="border-b border-gray-800"><td class="p-3 font-bold">Adesivos</td><td class="p-3">adesivos piracicaba, adesivo personalizado, adesivo para carro</td><td class="p-3">~15 km</td><td class="p-3">Página de adesivos</td></tr>
+                                        <tr class="border-b border-gray-800"><td class="p-3 font-bold">Fachadas / ACM / placas</td><td class="p-3">fachada acm, placa acm, letreiro piracicaba, fachada de loja</td><td class="p-3">~30 km, com Limeira, Americana, Rio Claro e Santa Bárbara</td><td class="p-3">Página de fachadas</td></tr>
+                                        <tr class="border-b border-gray-800"><td class="p-3 font-bold">Banners / lonas / wind</td><td class="p-3">banner piracicaba, banner personalizado, wind banner</td><td class="p-3">~15 km</td><td class="p-3">Página de banners</td></tr>
+                                        <tr><td class="p-3 font-bold">Impressos</td><td class="p-3">cartão de visita piracicaba, panfleto, cardápio</td><td class="p-3">~15 km</td><td class="p-3">Página de impressos</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="grid md:grid-cols-2 gap-8 text-sm text-gray-300">
+                                <div>
+                                    <h5 class="font-bold text-white mb-2">Configurações para todas:</h5>
+                                    <ul class="list-disc pl-5 space-y-1">
+                                        <li>Correspondência exata e de frase, sem aspas digitadas no termo.</li>
+                                        <li>Lista de negativas: copiadora, xerox, cópias, encadernação, nomes de concorrentes, termos fora do segmento (aluguel, emprego, lanche) e informacionais ("como fazer", "modelo", "tamanho").</li>
+                                        <li>Só português e sem TV conectada.</li>
+                                        <li>AI Max e aplicação automática de recomendações desligados.</li>
+                                        <li>Começar com Maximizar cliques e CPC máximo próximo de R$ 4. Passar para Maximizar conversões quando houver cerca de 30 leads reais por mês.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h5 class="font-bold text-white mb-2">Anúncios & Testes:</h5>
+                                    <ul class="list-disc pl-5 space-y-1">
+                                        <li>Um anúncio por grupo, falando do produto buscado.</li>
+                                        <li>Títulos fixos com a prova social e o posicionamento: "Nota 4,8 em 510+ avaliações", "Do cartão à fachada", "Pronta e instalada".</li>
+                                        <li>Recursos: sitelinks por produto, ligação, local, snippets estruturados com os serviços e imagens de trabalhos instalados.</li>
+                                        <li>Tirar a oferta de 10% off ou colocá-la também na página de destino.</li>
+                                        <li>Testar um gancho por vez em cada campanha: avaliação, instalação inclusa ou velocidade.</li>
+                                        <li>Revisar termos de pesquisa toda semana no primeiro mês e depois a cada 15 dias.</li>
+                                        <li>Acompanhar custo por lead e taxa de lead qualificado no Pipefy, por produto.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Parallax Separator -->
+    <div class="h-64 bg-fixed bg-center bg-cover flex items-center justify-center relative" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80');">
+        <div class="absolute inset-0 bg-black/60"></div>
+        <h2 class="relative z-10 text-3xl font-bold text-white tracking-widest uppercase">Análise Estrutural</h2>
+    </div>
+
+    <!-- Sessão 04: IA e Google -->
+    <section class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="reveal mb-12">
+                <h2 class="text-4xl md:text-5xl font-extrabold text-brand-tertiary mb-6">Diagnóstico de busca IA Generativas e Google</h2>
+                
+                <div class="bg-gray-50 border-l-4 border-brand-secondary p-8 rounded-xl shadow-sm mb-12">
+                    <h3 class="text-2xl font-bold mb-4 text-gradient">CIM - Comunicação Integrada de Marketing</h3>
+                    <p class="text-gray-700 text-lg leading-relaxed mb-4">A empresa tem duas identidades circulando ao mesmo tempo. O Instagram, o perfil do Google e o WhatsApp usam “Fixa Marca”. O Facebook, o YouTube, o link da bio e os diretórios usam “Cia do Panfleto”.</p>
+                    <p class="text-gray-700 text-lg leading-relaxed mb-4">Para o Google e para as IAs, isso não lê como “uma marca em transição”. Lê como dados conflitantes, e a versão mais antiga e mais citada, a de gráfica de panfletos, continua ganhando.</p>
+                    <p class="text-gray-700 text-lg leading-relaxed mb-4">A comunicação integrada é o que transforma os canais em segurança na citação correta. Quando isso acontece, o Google e a IA conseguem somar as avaliações, as fotos e as menções em uma entidade só.</p>
+                    <p class="text-gray-700 text-lg leading-relaxed font-semibold bg-orange-100 p-4 rounded text-brand-tertiary">Já há sinais disso: o ChatGPT descreveu a empresa como quem “trabalha com panfletos e materiais promocionais”, e a Visão geral do Google lista “impressos gráficos em geral” como primeiro serviço e fachadas só em terceiro.</p>
+                </div>
+            </div>
+
+            <div class="reveal">
+                <h3 class="text-2xl font-bold mb-6 text-brand-tertiary">Diagnóstico por canal</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                    
+                    <!-- Card Google -->
+                    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-md hover:-translate-y-2 transition-transform duration-300">
+                        <div class="aspect-square bg-gray-50 cursor-pointer overflow-hidden group p-4" onclick="openLightbox('https://imgur.com/EmHb1o7.png')">
+                            <img src="https://imgur.com/EmHb1o7.png" alt="Perfil do Google" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <div class="p-5 border-t border-gray-100">
+                            <h4 class="font-bold text-lg mb-2 flex items-center gap-2"><i class="fab fa-google text-blue-500"></i> Perfil do Google</h4>
+                            <ul class="text-sm text-gray-600 list-disc pl-4 space-y-1">
+                                <li>Não possui site vinculado</li>
+                                <li>Não possui Facebook e Youtube Vinculado</li>
+                                <li>Falta botão de Whatsapp rápido</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Card Bio -->
+                    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-md hover:-translate-y-2 transition-transform duration-300">
+                        <div class="aspect-square bg-gray-50 cursor-pointer overflow-hidden group p-4" onclick="openLightbox('https://imgur.com/iNe1yiC.png')">
+                            <img src="https://imgur.com/iNe1yiC.png" alt="Link da bio" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <div class="p-5 border-t border-gray-100">
+                            <h4 class="font-bold text-lg mb-2 flex items-center gap-2"><i class="fas fa-link text-gray-500"></i> Link da bio (bio.site)</h4>
+                            <ul class="text-sm text-gray-600 list-disc pl-4 space-y-1">
+                                <li>Domínio 'https://bio.site/graficaciadopanfleto'</li>
+                                <li>Identidade e banner da marca antiga</li>
+                                <li>Muita informação deixando confuso o CTA</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Card WhatsApp -->
+                    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-md hover:-translate-y-2 transition-transform duration-300">
+                        <div class="aspect-square bg-gray-50 cursor-pointer overflow-hidden group p-4" onclick="openLightbox('https://imgur.com/X2hbzJ8.png')">
+                            <img src="https://imgur.com/X2hbzJ8.png" alt="WhatsApp Business" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <div class="p-5 border-t border-gray-100">
+                            <h4 class="font-bold text-lg mb-2 flex items-center gap-2"><i class="fab fa-whatsapp text-green-500"></i> WhatsApp Business</h4>
+                            <ul class="text-sm text-gray-600 list-disc pl-4 space-y-1">
+                                <li>Ainda carrega abreviação “Ant Cia do Panfleto”</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Card Facebook -->
+                    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-md hover:-translate-y-2 transition-transform duration-300">
+                        <div class="aspect-square bg-gray-50 cursor-pointer overflow-hidden group p-4" onclick="openLightbox('https://imgur.com/6vY9FJi.png')">
+                            <img src="https://imgur.com/6vY9FJi.png" alt="Facebook" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <div class="p-5 border-t border-gray-100">
+                            <h4 class="font-bold text-lg mb-2 flex items-center gap-2"><i class="fab fa-facebook text-blue-600"></i> Facebook</h4>
+                            <ul class="text-sm text-gray-600 list-disc pl-4 space-y-1">
+                                <li>Corrigir NAP - Nome, endereço, telefone</li>
+                                <li>Descrição ‘Apresentação’ não está alinhada com descrição do Perfil Google</li>
+                                <li>"Fechado agora"</li>
+                                <li>Capa e foto de perfil antiga</li>
+                                <li>Nome do usuário/ URL antigo @companhiadopanfleto</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Card YouTube -->
+                    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-md hover:-translate-y-2 transition-transform duration-300">
+                        <div class="aspect-square bg-gray-50 cursor-pointer overflow-hidden group p-4" onclick="openLightbox('https://imgur.com/To5RZio.png')">
+                            <img src="https://imgur.com/To5RZio.png" alt="YouTube" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <div class="p-5 border-t border-gray-100">
+                            <h4 class="font-bold text-lg mb-2 flex items-center gap-2"><i class="fab fa-youtube text-red-600"></i> YouTube</h4>
+                            <ul class="text-sm text-gray-600 list-disc pl-4 space-y-1">
+                                <li>Banner desatualizado</li>
+                                <li>Nome do usuário/ URL @companhiadopanfleto</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Card Diretórios -->
+                    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-md hover:-translate-y-2 transition-transform duration-300">
+                        <div class="aspect-square bg-gray-50 cursor-pointer overflow-hidden group p-4" onclick="openLightbox('https://imgur.com/7Ep8vyS.png')">
+                            <img src="https://imgur.com/7Ep8vyS.png" alt="Diretórios" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500">
+                        </div>
+                        <div class="p-5 border-t border-gray-100">
+                            <h4 class="font-bold text-lg mb-2 flex items-center gap-2"><i class="fas fa-map-marked-alt text-brand-secondary"></i> Diretórios</h4>
+                            <ul class="text-sm text-gray-600 list-disc pl-4 space-y-1">
+                                <li>(Piracicaba Fácil, Loqal, WanderBoat)</li>
+                                <li>São citações que as IAs usam e atualmente listam “Cia do Panfleto”</li>
+                                <li>Solicitar correção pelo formulário de cada site, com a ficha NAP</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Card Instagram -->
+                    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-md hover:-translate-y-2 transition-transform duration-300 lg:col-span-3">
+                        <div class="h-64 md:h-96 bg-gray-50 cursor-pointer overflow-hidden group flex items-center justify-center p-4" onclick="openLightbox('https://imgur.com/skqAJ54.png')">
+                            <img src="https://imgur.com/skqAJ54.png" alt="Instagram" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500">
+                        </div>
+                        <div class="p-5 border-t border-gray-100">
+                            <h4 class="font-bold text-lg mb-2 flex items-center gap-2"><i class="fab fa-instagram text-pink-600"></i> Instagram</h4>
+                            <ul class="text-sm text-gray-600 list-disc pl-4 space-y-1 md:flex md:gap-8 md:space-y-0">
+                                <li class="md:w-1/3">Endereço está na descrição da Bio ao invés das opções de contato > localização</li>
+                                <li class="md:w-1/3">Possui dois Whatsapp no lnik da Bio podendo haver confusão</li>
+                                <li class="md:w-1/3">Destaques na cor azul divergente da identidade visual laranja e preto</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8 items-start">
+                    <div>
+                        <h3 class="text-2xl font-bold mb-4 text-brand-tertiary">Os conflitos de NAP</h3>
+                        <div class="table-wrapper text-sm mb-4">
+                            <table>
+                                <thead><tr><th>Dado</th><th>Versão A</th><th>Versão B</th></tr></thead>
+                                <tbody>
+                                    <tr><td class="font-bold">Nome</td><td class="text-green-600 font-semibold">Fixa Marca (Google, Instagram, WhatsApp)</td><td class="text-red-500">Cia do Panfleto (Facebook, YouTube, bio.site, diretórios)</td></tr>
+                                    <tr><td class="font-bold">Telefone</td><td>(19) 99621-3461</td><td>(19) 99826-9906</td></tr>
+                                    <tr><td class="font-bold">Endereço</td><td>Rua Santa Cruz, 1591, Alto</td><td>Rua Riachuelo, 1321</td></tr>
+                                    <tr><td class="font-bold">Horário</td><td>Google: “Aberto”, fecha às 18h</td><td>Facebook: “Fechado agora”</td></tr>
+                                    <tr><td class="font-bold">Site</td><td>Nenhum no perfil do Google</td><td>bio.site no Instagram e ciadopanfleto.com.br no YouTube e Facebook</td></tr>
+                                    <tr><td class="font-bold">E-mail</td><td>(não confirmado)</td><td>E-mail com “companhiadopanfleto” no Facebook</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="bg-gray-100 p-8 rounded-xl h-full flex flex-col justify-center">
+                        <h3 class="text-2xl font-bold mb-4 text-brand-tertiary">Por que isso prejudica a busca</h3>
+                        <p class="text-gray-700 mb-4 text-lg">O Google e IA Generativas reconhece um negócio pela consistência. Quando nome, endereço e telefone mudam de um canal para outro, o sistema fica em dúvida sobre qual é a correta e diminui a relavância na citação.</p>
+                        <p class="text-gray-700 text-lg">O canal que mais pesa. Facebook e diretórios descrevem uma gráfica de impressos, e a IA repete essa descrição.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sessão 05: Cronograma / Roadmap -->
+    <section class="py-24 bg-brand-tertiary text-white relative overflow-hidden">
+        <div class="blob bg-orange-500/10 w-full h-96 top-0 left-0"></div>
+        <div class="max-w-5xl mx-auto px-6 relative z-10">
+            <div class="reveal text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-extrabold mb-4 text-gradient">Transição de marca ordenado por ações</h2>
+                <p class="text-xl text-gray-300">Deve ser comunicada em ondas, começando por quem já compra da Fixa Marca.</p>
+            </div>
+
+            <div class="timeline-container reveal bg-black/40 p-8 rounded-2xl border border-gray-800 backdrop-blur-sm">
+                <!-- Timeline Items -->
+                <div class="timeline-item">
+                    <h4 class="text-brand-secondary font-bold text-lg mb-1">Dias 1 e 2</h4>
+                    <p class="text-gray-300 bg-gray-900/50 p-4 rounded-lg">Renomear o WhatsApp Business. Corrigir NAP no Facebook e no YouTube. Alinhar o horário. Vincular o site, o Facebook e o YouTube no Perfil do Google. Adicionar o botão de WhatsApp</p>
+                </div>
+                <div class="timeline-item">
+                    <h4 class="text-brand-secondary font-bold text-lg mb-1">Dias 3 e 4</h4>
+                    <div class="text-gray-300 bg-gray-900/50 p-4 rounded-lg relative overflow-hidden">
+                        <i class="fab fa-whatsapp absolute top-4 right-4 text-4xl text-green-500/20"></i>
+                        <p class="mb-2 italic">"Enviar a mensagem aos clientes ativos pelo WhatsApp, feita por quem atende cada conta dizendo:</p>
+                        <p class="mb-2 pl-4 border-l-2 border-brand-secondary text-gray-400">'Oi, [nome]! Tudo bem? Passando para avisar uma novidade: a Cia do Panfleto agora é Fixa Marca.</p>
+                        <p class="mb-2 pl-4 border-l-2 border-brand-secondary text-gray-400">Continuamos com a mesma equipe e o mesmo atendimento. Só ampliamos o que fazemos: do cartão à fachada, com produção e instalação aqui em Piracicaba.</p>
+                        <p class="mb-2 pl-4 border-l-2 border-brand-secondary text-gray-400">Qualquer pedido, é só me chamar por aqui, como sempre. 😊'"</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <h4 class="text-brand-secondary font-bold text-lg mb-1">Semana 2</h4>
+                    <ul class="text-gray-300 bg-gray-900/50 p-4 rounded-lg space-y-2 list-disc pl-6">
+                        <li>Post de anúncio no Instagram e destaque “Quem somos” com a frase de mudança</li>
+                        <li>Instagram: mover o endereço para a localização de contato, deixar um único WhatsApp no link da bio e refazer as capas dos destaques nas cores laranja e preta</li>
+                        <li>Facebook: corrigir nome, URL, categoria, descrição, capa e foto. Fixar um post da nova marca e tirar a campanha de panfletos do topo</li>
+                    </ul>
+                </div>
+                <div class="timeline-item">
+                    <h4 class="text-brand-secondary font-bold text-lg mb-1">Semanas 2 e 3</h4>
+                    <p class="text-gray-300 bg-gray-900/50 p-4 rounded-lg">Reel curto mostrando a equipe e uma instalação</p>
+                </div>
+                <div class="timeline-item">
+                    <h4 class="text-brand-secondary font-bold text-lg mb-1">Semanas 2 a 4</h4>
+                    <ul class="text-gray-300 bg-gray-900/50 p-4 rounded-lg space-y-2 list-disc pl-6">
+                        <li>YouTube: trocar banner, handle e descrição do canal. Atualizar os vídeos e publicar um vídeo de instalação</li>
+                        <li>Diretórios (Piracicaba Fácil, Loqal, WanderBoat e outros): pedir correção pelo formulário de cada site, com a ficha NAP</li>
+                    </ul>
+                </div>
+                <div class="timeline-item">
+                    <h4 class="text-brand-secondary font-bold text-lg mb-1">Semanas 3 e 4</h4>
+                    <p class="text-gray-300 bg-gray-900/50 p-4 rounded-lg">Criar a página Fixa Marca no domínio e então trocar o link da bio por ela. Se o domínio mudar, usar redirecionamento 301 página a página</p>
+                </div>
+                <div class="timeline-item">
+                    <h4 class="text-brand-secondary font-bold text-lg mb-1">Semanas 4 a 6</h4>
+                    <p class="text-gray-300 bg-gray-900/50 p-4 rounded-lg">Assinatura de e-mail, modelo de orçamento, proposta em PDF e materiais impressos com “Fixa Marca”</p>
+                </div>
+                <div class="timeline-item">
+                    <h4 class="text-brand-secondary font-bold text-lg mb-1">Semana 5</h4>
+                    <p class="text-gray-300 bg-gray-900/50 p-4 rounded-lg">Trocar o nome do Perfil do Google para exatamente “FIXA MARCA”, sem slogan, cidade ou nome antigo</p>
+                </div>
+                <div class="timeline-item">
+                    <h4 class="text-brand-secondary font-bold text-lg mb-1">Semanas 5 a 8</h4>
+                    <ul class="text-gray-300 bg-gray-900/50 p-4 rounded-lg space-y-2 list-disc pl-6">
+                        <li>Publicar páginas por serviço: fachada ACM, envelopamento de frota, placas de comunicação visual e gráfica com instalação em Piracicaba</li>
+                        <li>Pedir avaliação no Google aos clientes que compraram instalação, pelo link oficial e sem oferecer nada em troca</li>
+                        <li>Publicar no Perfil do Google com fotos de instalações, com frequência semanal</li>
+                    </ul>
+                </div>
+                <div class="timeline-item">
+                    <h4 class="text-brand-secondary font-bold text-lg mb-1">Mês 3</h4>
+                    <p class="text-gray-300 bg-gray-900/50 p-4 rounded-lg">Revisar o painel de IA e os Insights do Perfil do Google. Decidir se a ancoragem “antiga Cia do Panfleto” continua</p>
+                </div>
+                <div class="timeline-item">
+                    <h4 class="text-brand-secondary font-bold text-lg mb-1">Meses 4 e 5</h4>
+                    <p class="text-gray-300 bg-gray-900/50 p-4 rounded-lg">Retirar “antiga Cia do Panfleto” dos canais principais, se as buscas pelo nome antigo tiverem caído</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sessão 06: Mídia Sociais -->
+    <section class="py-24 bg-gray-50 relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="reveal mb-16 text-center">
+                <h2 class="text-4xl md:text-5xl font-extrabold text-brand-tertiary mb-4">Diagnóstico de mídia sociais</h2>
+                <div class="w-24 h-1 bg-brand-secondary mx-auto rounded"></div>
+            </div>
+
+            <div class="space-y-16 reveal">
+                <!-- 1. Benchmark -->
+                <div>
+                    <h3 class="text-2xl font-bold mb-6 text-brand-tertiary"><span class="text-brand-secondary">1.</span> Benchmark</h3>
+                    <p class="text-gray-700 mb-6">- Vídeo bem produzido com a entrega do serviço, marcando os clientes<br>Melhora reputação, aumenta o porfólio online e aumenta base de seguidores.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 items-start">
+                        <!-- Imagem (Anteriormente Vídeo) -->
+                        <div class="aspect-square bg-gray-50 rounded-xl overflow-hidden shadow-md border border-gray-100 p-2 cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all" onclick="openLightbox('https://imgur.com/YnKGChe.png')">
+                            <img src="https://imgur.com/YnKGChe.png" alt="Benchmark Imagem" class="w-full h-full object-contain rounded-lg">
+                        </div>
+
+                        <!-- Vídeo 1 -->
+                        <div class="aspect-[9/16] bg-black rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all relative group">
+                            <video src="https://i.imgur.com/RFfQmrp.mp4" class="w-full h-full object-cover video-reel" autoplay loop muted playsinline></video>
+                            <button class="absolute bottom-3 right-3 bg-black/60 text-white w-8 h-8 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 audio-toggle">
+                                <i class="fas fa-volume-mute"></i>
+                            </button>
+                        </div>
+
+                        <!-- Vídeo 2 -->
+                        <div class="aspect-[9/16] bg-black rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-all relative group">
+                            <video src="https://i.imgur.com/dMrKzof.mp4" class="w-full h-full object-cover video-reel" autoplay loop muted playsinline></video>
+                            <button class="absolute bottom-3 right-3 bg-black/60 text-white w-8 h-8 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 audio-toggle">
+                                <i class="fas fa-volume-mute"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <p class="text-gray-700 mb-6">- Post fixado institucional falando dos serviços e comunicando ser parceira estratégica de comunicação de marca</p>
+                    
+                    <!-- Vídeos em Looping (Anteriormente Imagens) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-black rounded-xl overflow-hidden shadow-md relative group hover:shadow-lg hover:-translate-y-1 transition-all">
+                            <video src="https://i.imgur.com/sVnTeYJ.mp4" class="w-full max-h-[600px] rounded-lg object-contain video-reel" autoplay loop muted playsinline></video>
+                            <button class="absolute bottom-3 right-3 bg-black/60 text-white w-8 h-8 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 audio-toggle">
+                                <i class="fas fa-volume-mute"></i>
+                            </button>
+                        </div>
+                        <div class="bg-black rounded-xl overflow-hidden shadow-md relative group hover:shadow-lg hover:-translate-y-1 transition-all">
+                            <video src="https://i.imgur.com/aU4TtTl.mp4" class="w-full max-h-[600px] rounded-lg object-contain video-reel" autoplay loop muted playsinline></video>
+                            <button class="absolute bottom-3 right-3 bg-black/60 text-white w-8 h-8 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10 audio-toggle">
+                                <i class="fas fa-volume-mute"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <p class="text-gray-700 font-semibold bg-gray-200 inline-block px-4 py-2 rounded-lg">- De 5 à 13 post mensal na média - 90% vídeos rells</p>
+                </div>
+
+                <!-- 2. Visão Geral -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-2xl font-bold mb-6 text-brand-tertiary"><span class="text-brand-secondary">2.</span> Visão geral do perfil</h3>
+                    
+                    <div class="grid lg:grid-cols-3 gap-8 items-center">
+                        <div class="lg:col-span-1">
+                            <img src="https://imgur.com/X7tltVZ.png" alt="Visão Geral do Perfil" class="w-full rounded-xl shadow-md cursor-pointer hover:scale-105 transition-transform" onclick="openLightbox('https://imgur.com/X7tltVZ.png')">
+                        </div>
+                        <div class="lg:col-span-2 space-y-4 text-gray-700">
+                            <p><strong>Números:</strong> 45 publicações, 1.791 seguidores e 20 seguindo. Para uma empresa com 16 anos de mercado e mais de 3.000 clientes, a base de seguidores é pequena. Isso sugere que o perfil ainda não converte a base real em audiência.</p>
+                            <p><strong>Grid:</strong> o ponto forte é a prova visual. Vários posts mostram fachadas, envelopamentos, veículos instalados e placas, que é exatamente o diferencial “produzimos e instalamos”.</p>
+                            <p><strong>Identidade:</strong> o nome legado “Cia do Panfleto” ainda aparece no campo de nome e na bio. Isso reforça a associação com impresso barato, justamente o que a transição quer deixar para trás.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Situação x Plano -->
+                <div>
+                    <h3 class="text-2xl font-bold mb-6 text-brand-tertiary"><span class="text-brand-secondary">3.</span> Situação atual vs. plano de ação</h3>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead><tr><th>Item</th><th>Situação atual</th><th>Plano de ação</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td class="font-bold">Linha do nome</td>
+                                    <td>“Fixa Marca / Cia do Panfleto”. O nome antigo ocupa o campo mais pesquisável do perfil e mistura duas marcas.</td>
+                                    <td>Manter por no máximo máximo 6 meses. Conforme orientação feita anteriormente nesse documento</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold">Bio</td>
+                                    <td>Tem a promessa certa (“Do cartão à fachada, em um só contato”), mas não cita os serviços, , usa a localização no lugar errado e o CTA é fraco.</td>
+                                    <td class="bg-orange-50 italic border-l-4 border-brand-secondary">"Reescrever (texto abaixo).<br><br>Do cartão à fachada, num só contato.<br>Adesivos, placas, cartões<br>⭐ 4,8 Google · +510 avaliações<br>Antiga Cia do Panfleto<br>👇 Orçamento no WhatsApp "</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold">Destaques</td>
+                                    <td>Quatro círculos com ícones (pessoas, hashtag, pin, caixa).</td>
+                                    <td>Reorganizar para Serviços, Instalações, Clientes, Avaliações e Orçamento. Trocar as capas na mesma cor e tipografia da marca.</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold">Fixados</td>
+                                    <td>Não possui post fixado</td>
+                                    <td>Fixar 1 post: Institucional falando dos serviços</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sessão 07: Site/Landing Page -->
+    <section class="py-24 bg-white relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="reveal text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-extrabold text-brand-tertiary mb-4">Diagnóstico do Site/ Landing page</h2>
+                <div class="w-24 h-1 bg-brand-secondary mx-auto rounded"></div>
+            </div>
+
+            <div class="reveal">
+                <h3 class="text-2xl font-bold mb-8 text-brand-tertiary">1. Benchmark Arquitetura de Conversão</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Dobra 1 -->
+                    <div class="bg-gray-50 rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col hover:-translate-y-2 transition-transform duration-300">
+                        <h4 class="font-bold text-brand-secondary mb-2 text-sm uppercase">1ª Dobra</h4>
+                        <p class="text-xs text-gray-500 mb-3 flex-grow">PUV a esquerda e imagem a direita</p>
+                        <img src="https://imgur.com/348RMaV.png" class="w-full h-32 object-cover rounded cursor-pointer border border-gray-200" onclick="openLightbox('https://imgur.com/348RMaV.png')" alt="1ª Dobra">
+                    </div>
+
+                    <!-- Dobra 2 -->
+                    <div class="bg-gray-50 rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col hover:-translate-y-2 transition-transform duration-300">
+                        <h4 class="font-bold text-brand-secondary mb-2 text-sm uppercase">2ª Dobra</h4>
+                        <p class="text-xs text-gray-500 mb-3 flex-grow">Autoridade</p>
+                        <div class="flex gap-2">
+                            <img src="https://imgur.com/6qToaHV.png" class="w-1/2 h-32 object-cover rounded cursor-pointer border border-gray-200" onclick="openLightbox('https://imgur.com/6qToaHV.png')" alt="2ª Dobra A">
+                            <img src="https://imgur.com/0Sdx4VE.png" class="w-1/2 h-32 object-cover rounded cursor-pointer border border-gray-200" onclick="openLightbox('https://imgur.com/0Sdx4VE.png')" alt="2ª Dobra B">
+                        </div>
+                    </div>
+
+                    <!-- Dobra 3 -->
+                    <div class="bg-gray-50 rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col hover:-translate-y-2 transition-transform duration-300">
+                        <h4 class="font-bold text-brand-secondary mb-2 text-sm uppercase">3ª Dobra</h4>
+                        <p class="text-xs text-gray-500 mb-3 flex-grow">Serviços</p>
+                        <div class="flex gap-2">
+                            <img src="https://imgur.com/4htNleF.png" class="w-1/2 h-32 object-cover rounded cursor-pointer border border-gray-200" onclick="openLightbox('https://imgur.com/4htNleF.png')" alt="3ª Dobra A">
+                            <img src="https://imgur.com/5f9LOXm.png" class="w-1/2 h-32 object-cover rounded cursor-pointer border border-gray-200" onclick="openLightbox('https://imgur.com/5f9LOXm.png')" alt="3ª Dobra B">
+                        </div>
+                    </div>
+
+                    <!-- Dobra 4 -->
+                    <div class="bg-gray-50 rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col hover:-translate-y-2 transition-transform duration-300">
+                        <h4 class="font-bold text-brand-secondary mb-2 text-sm uppercase">4ª Dobra</h4>
+                        <p class="text-xs text-gray-500 mb-3 flex-grow">Prova Social</p>
+                        <img src="https://imgur.com/7oemrNA.png" class="w-full h-32 object-cover rounded cursor-pointer border border-gray-200" onclick="openLightbox('https://imgur.com/7oemrNA.png')" alt="4ª Dobra">
+                    </div>
+
+                    <!-- Dobra 5 -->
+                    <div class="bg-gray-50 rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col hover:-translate-y-2 transition-transform duration-300">
+                        <h4 class="font-bold text-brand-secondary mb-2 text-sm uppercase">5ª Dobra</h4>
+                        <p class="text-xs text-gray-500 mb-3 flex-grow">Onde estamos</p>
+                        <img src="https://imgur.com/WDsJ6u0.png" class="w-full h-32 object-cover rounded cursor-pointer border border-gray-200" onclick="openLightbox('https://imgur.com/WDsJ6u0.png')" alt="5ª Dobra">
+                    </div>
+
+                    <!-- Dobra 6 -->
+                    <div class="bg-gray-50 rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col hover:-translate-y-2 transition-transform duration-300">
+                        <h4 class="font-bold text-brand-secondary mb-2 text-sm uppercase">6ª Dobra</h4>
+                        <p class="text-xs text-gray-500 mb-3 flex-grow">Autoridade</p>
+                        <div class="flex gap-2">
+                            <img src="https://imgur.com/tDlDtwK.png" class="w-1/2 h-32 object-cover rounded cursor-pointer border border-gray-200" onclick="openLightbox('https://imgur.com/tDlDtwK.png')" alt="6ª Dobra A">
+                            <img src="https://imgur.com/NwLldl0.png" class="w-1/2 h-32 object-cover rounded cursor-pointer border border-gray-200" onclick="openLightbox('https://imgur.com/NwLldl0.png')" alt="6ª Dobra B">
+                        </div>
+                    </div>
+
+                    <!-- Dobra 7 -->
+                    <div class="bg-gray-50 rounded-xl p-4 shadow-sm border border-gray-100 flex flex-col md:col-span-2 hover:-translate-y-2 transition-transform duration-300">
+                        <h4 class="font-bold text-brand-secondary mb-2 text-sm uppercase">7ª Dobra</h4>
+                        <p class="text-xs text-gray-500 mb-3 flex-grow">Cta final</p>
+                        <div class="flex gap-2">
+                            <img src="https://imgur.com/VlTg2oR.png" class="w-1/2 h-40 object-cover rounded cursor-pointer border border-gray-200" onclick="openLightbox('https://imgur.com/VlTg2oR.png')" alt="7ª Dobra A">
+                            <img src="https://imgur.com/SjAHnix.png" class="w-1/2 h-40 object-cover rounded cursor-pointer border border-gray-200" onclick="openLightbox('https://imgur.com/SjAHnix.png')" alt="7ª Dobra B">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sessão 08: Roadmap Geral -->
+    <section class="py-24 bg-gray-900 text-white relative">
+        <div class="max-w-7xl mx-auto px-6 reveal">
+            <h2 class="text-4xl md:text-5xl font-extrabold mb-10 text-center text-brand-secondary">Roadmap</h2>
+            <div class="bg-white/10 p-4 rounded-2xl backdrop-blur-sm border border-white/20">
+                <img src="https://imgur.com/7WPC9fd.png" alt="Roadmap Final" class="w-full rounded-xl cursor-pointer hover:opacity-90 transition-opacity" onclick="openLightbox('https://imgur.com/7WPC9fd.png')">
+            </div>
+        </div>
+    </section>
+
+    <!-- Sessão 09: Conclusão -->
+    <section class="py-24 bg-white relative">
+        <div class="max-w-4xl mx-auto px-6 text-center reveal">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-green-100 text-green-500 rounded-full mb-8 shadow-inner">
+                <i class="fas fa-check-circle text-4xl"></i>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-extrabold text-brand-tertiary mb-6 uppercase tracking-tight">O QUE ACONTECEU ESSA SEMANA</h2>
+            <p class="text-xl text-gray-600 mb-12">- Entendemos de forma mais aprofundada como está o seu marketing e da sua concorrência.</p>
+            
+            <div class="bg-brand-secondary text-white p-10 rounded-3xl shadow-2xl shadow-orange-500/30 transform hover:-translate-y-2 transition-transform duration-500">
+                <h3 class="text-2xl font-bold mb-4 uppercase"><i class="fas fa-rocket mr-2"></i> PRÓXIMOS PASSOS:</h3>
+                <p class="text-lg md:text-xl opacity-90">Entrega final do planejamento de execução junto com os artefatos comerciais</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-[#E50914] text-white py-12 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center relative z-10">
+            <div class="text-sm font-medium opacity-80 mb-4 md:mb-0">
+                &copy; 2026 Fixa Marca. Todos os direitos reservados.
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="text-sm font-bold uppercase tracking-widest">Produzido por:</span>
+                <img src="https://imgur.com/SU08Zb0.png" alt="V4 Silva Anchieta & Co Logo" class="h-10 hover:scale-110 transition-transform duration-300">
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // 1. Sticky Header with Glassmorphism
+        const header = document.getElementById('main-header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('glass');
+                header.classList.remove('bg-white', 'py-4', 'shadow-sm');
+                header.classList.add('py-2'); // Shrink slightly
+            } else {
+                header.classList.remove('glass');
+                header.classList.add('bg-white', 'py-4', 'shadow-sm');
+                header.classList.remove('py-2');
+            }
+        });
+
+        // 2. Intersection Observer for Scroll Reveal
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // 3. Lightbox Logic
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        
+        function openLightbox(src) {
+            lightboxImg.src = src;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            setTimeout(() => { lightboxImg.src = ''; }, 300);
+            document.body.style.overflow = 'auto'; // Restore scrolling
+        }
+
+        // Close lightbox on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                closeLightbox();
+            }
+        });
+
+        // 4. Line Clamp (Ver Mais / Ver Menos) Toggle
+        const btnVerMais = document.querySelectorAll('.btn-ver-mais');
+        btnVerMais.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const textBlock = e.target.previousElementSibling;
+                textBlock.classList.toggle('line-clamp-4');
+                if(textBlock.classList.contains('line-clamp-4')) {
+                    e.target.textContent = 'Ver mais';
+                } else {
+                    e.target.textContent = 'Ver menos';
+                }
+            });
+        });
+
+        // 5. Audio Toggle (Reels Style Overlay)
+        document.querySelectorAll('.audio-toggle').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const video = e.currentTarget.previousElementSibling;
+                const icon = e.currentTarget.querySelector('i');
+                
+                video.muted = !video.muted;
+                
+                if (video.muted) {
+                    icon.classList.remove('fa-volume-up');
+                    icon.classList.add('fa-volume-mute');
+                } else {
+                    icon.classList.remove('fa-volume-mute');
+                    icon.classList.add('fa-volume-up');
+                }
+            });
+        });
+
+        // 6. Accordion Toggle List (Mídia Paga)
+        document.querySelectorAll('.accordion-toggle').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const content = this.nextElementSibling;
+                const icon = this.querySelector('.fa-chevron-down');
+                
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
+        });
+
+    </script>
+</body>
+</html>
